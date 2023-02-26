@@ -1,6 +1,6 @@
 package net.perpetualeve.deeppouches;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,13 +61,13 @@ public class DeepPouches {
 		builder.worldRestart();
 		alpha_slots_cfg = builder.defineInRange("alpha_slots", 5, 1, 54);
 		builder.comment("Which items should the Alpha Pouch accept, \"itemID1\",\"itemID2\"..., \"minecraft:apple\"");
-		alpha_items_cfg = builder.defineList("alpha_items_accepted", Collections.emptyList(), T -> true);
+		alpha_items_cfg = builder.defineList("alpha_items_accepted", Arrays.asList("minecraft:apple"), T -> true);
 		
 		builder.comment("How many slots should the Beta Pouch have");
 		builder.worldRestart();
 		beta_slots_cfg = builder.defineInRange("beta_slots", 8, 1, 54);
 		builder.comment("Which items should the Beta Pouch accept, \"itemID1\",\"itemID2\"..., \"minecraft:apple\"");
-		beta_items_cfg = builder.defineList("beta_items_accepted", Collections.emptyList(), T -> true);
+		beta_items_cfg = builder.defineList("beta_items_accepted", Arrays.asList("minecraft:stick"), T -> true);
 		
 		builder.pop();
 		CONFIG = builder.build();
@@ -92,6 +92,8 @@ public class DeepPouches {
 	}
 
 	public void onLoad(ModConfigEvent.Loading configEvent) {
+		alpha_slots = alpha_slots_cfg.get();
+		beta_slots = beta_slots_cfg.get();
 		reloadConfig();
 	}
 
@@ -101,8 +103,8 @@ public class DeepPouches {
 	
 	public void reloadConfig() {
 //		if(!isAllowedToLoad()) return; 
-		alpha_slots = alpha_slots_cfg.get();
-		beta_slots = beta_slots_cfg.get();
+//		alpha_slots = alpha_slots_cfg.get();
+//		beta_slots = beta_slots_cfg.get();
 		alpha_items.clear();
 		for(String f:alpha_items_cfg.get()) {
 			alpha_items.add(ForgeRegistries.ITEMS.getValue(new ResourceLocation(f)));

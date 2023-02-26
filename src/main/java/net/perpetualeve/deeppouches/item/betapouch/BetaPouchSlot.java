@@ -19,4 +19,9 @@ public class BetaPouchSlot extends Slot {
 	public int getMaxStackSize() {
 		return Integer.MAX_VALUE;
 	}
+	
+	@Override
+	public int getMaxStackSize(ItemStack p_40238_) {
+		return Integer.MAX_VALUE;
+	}
 }

@@ -19,6 +19,11 @@ public class IItemStackWrapper implements Container {
 			handler.setStackInSlot(i, handler.getStackInSlot(i));
 		}
 	}
+	
+	@Override
+	public int getMaxStackSize() {
+		return Integer.MAX_VALUE;
+	}
 
 	@Override
 	public int getContainerSize() {
