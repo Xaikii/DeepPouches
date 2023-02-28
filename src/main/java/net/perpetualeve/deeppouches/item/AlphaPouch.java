@@ -28,13 +28,17 @@ public class AlphaPouch extends Item {
 		if (player.containerMenu != player.inventoryMenu) {
 			player.closeContainer();
 		}
-		if(player instanceof ServerPlayer splayer) {
-			NetworkHooks.openScreen(splayer, new SimpleMenuProvider((w,p,pl) -> new AlphaPouchMenu(w, p, new IItemStackWrapper(new PouchItemStackHandler(pl.getItemInHand(hand), DeepPouches.alpha_slots))), Component.literal("")));
+		if (player instanceof ServerPlayer splayer) {
+			NetworkHooks.openScreen(splayer, new SimpleMenuProvider(
+					(w, p, pl) -> new AlphaPouchMenu(w, p,
+							new IItemStackWrapper(
+									new PouchItemStackHandler(pl.getItemInHand(hand), DeepPouches.alpha_slots))),
+					Component.literal("")));
 			return InteractionResultHolder.fail(player.getItemInHand(hand));
 		}
 		return InteractionResultHolder.pass(player.getItemInHand(hand));
 	}
-	
+
 	@Override
 	public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
 		return new PouchItemStackHandler(stack, DeepPouches.alpha_slots);

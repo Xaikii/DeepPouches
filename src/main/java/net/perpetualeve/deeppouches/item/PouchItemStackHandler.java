@@ -169,7 +169,6 @@ public class PouchItemStackHandler implements IItemHandler, IItemHandlerModifiab
 				itemstack.save(compoundtag);
 				compoundtag.putInt("iSize", itemstack.getCount());
 				listtag.add(compoundtag);
-				System.out.println("Save: " + compoundtag);
 			}
 		}
 
@@ -190,7 +189,6 @@ public class PouchItemStackHandler implements IItemHandler, IItemHandlerModifiab
 				ItemStack stack = ItemStack.of(compoundtag);
 				stack.setCount(compoundtag.getInt("iSize"));
 				p_18982_.set(j, stack);
-				System.out.println("Load: " + compoundtag);
 			}
 		}
 

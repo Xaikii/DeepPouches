@@ -6,20 +6,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 public class IItemStackWrapper implements Container {
-	
+
 	IItemHandlerModifiable handler;
-	
+
 	public IItemStackWrapper(IItemHandlerModifiable handler) {
 		this.handler = handler;
 	}
-	
+
 	@Override
 	public void clearContent() {
-		for(int i = 0; i<handler.getSlots();i++) {
+		for (int i = 0; i < handler.getSlots(); i++) {
 			handler.setStackInSlot(i, handler.getStackInSlot(i));
 		}
 	}
-	
+
 	@Override
 	public int getMaxStackSize() {
 		return Integer.MAX_VALUE;
@@ -32,8 +32,9 @@ public class IItemStackWrapper implements Container {
 
 	@Override
 	public boolean isEmpty() {
-		for(int i = 0; i<handler.getSlots();i++) {
-			if(!handler.getStackInSlot(i).isEmpty()) return false;
+		for (int i = 0; i < handler.getSlots(); i++) {
+			if (!handler.getStackInSlot(i).isEmpty())
+				return false;
 		}
 		return true;
 	}
@@ -62,7 +63,7 @@ public class IItemStackWrapper implements Container {
 
 	@Override
 	public void setChanged() {
-		
+
 	}
 
 	@Override

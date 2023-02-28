@@ -18,7 +18,7 @@ import net.perpetualeve.deeppouches.DeepPouches;
 import net.perpetualeve.deeppouches.item.betapouch.BetaPouchMenu;
 
 public class BetaPouch extends Item {
-	
+
 	public BetaPouch(Properties p_41383_) {
 		super(p_41383_);
 	}
@@ -28,13 +28,18 @@ public class BetaPouch extends Item {
 		if (player.containerMenu != player.inventoryMenu) {
 			player.closeContainer();
 		}
-		if(player instanceof ServerPlayer splayer) {
-			NetworkHooks.openScreen(splayer, new SimpleMenuProvider((w,p,pl) -> new BetaPouchMenu(w, p, new IItemStackWrapper(new PouchItemStackHandler(pl.getItemInHand(hand), DeepPouches.beta_slots))), Component.literal("")));
+		if (player instanceof ServerPlayer splayer) {
+			NetworkHooks.openScreen(splayer,
+					new SimpleMenuProvider(
+							(w, p, pl) -> new BetaPouchMenu(w, p,
+									new IItemStackWrapper(
+											new PouchItemStackHandler(pl.getItemInHand(hand), DeepPouches.beta_slots))),
+							Component.literal("")));
 			return InteractionResultHolder.fail(player.getItemInHand(hand));
 		}
 		return InteractionResultHolder.pass(player.getItemInHand(hand));
 	}
-	
+
 	@Override
 	public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
 		return new PouchItemStackHandler(stack, DeepPouches.beta_slots);

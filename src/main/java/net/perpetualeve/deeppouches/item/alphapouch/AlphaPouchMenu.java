@@ -68,11 +68,6 @@ public class AlphaPouchMenu extends AbstractContainerMenu {
 
 	@Override
 	public ItemStack quickMoveStack(Player p_38941_, int p_38942_) {
-		
-		/*
-		 * Fix this to update the Stack Size
-		 */
-		
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.slots.get(p_38942_);
 		if (slot != null && slot.hasItem()) {
@@ -92,7 +87,9 @@ public class AlphaPouchMenu extends AbstractContainerMenu {
 				slot.setChanged();
 			}
 		}
-
+		if (!itemstack.isEmpty() && itemstack.getTag() != null) {
+			itemstack.setCount(itemstack.getTag().getInt("iSize"));
+		}
 		return itemstack;
 	}
 
@@ -103,99 +100,60 @@ public class AlphaPouchMenu extends AbstractContainerMenu {
 			i = p_38906_ - 1;
 		}
 
-		if (p_38904_.isStackable()) {
-			while (!p_38904_.isEmpty()) {
-				if (p_38907_) {
-					if (i < p_38905_) {
-						break;
-					}
-				} else if (i >= p_38906_) {
-					break;
-				}
-
-				Slot slot = this.slots.get(i);
-				ItemStack itemstack = slot.getItem();
-				if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(p_38904_, itemstack)) {
-					int j = itemstack.getCount() + p_38904_.getCount();
-					int maxSize = slot.getMaxStackSize();
-					if (j <= maxSize) {
-						p_38904_.setCount(0);
-						itemstack.setCount(j);
-						slot.setChanged();
-						flag = true;
-					} else if (itemstack.getCount() < maxSize) {
-						p_38904_.shrink(maxSize - itemstack.getCount());
-						itemstack.setCount(maxSize);
-						slot.setChanged();
-						flag = true;
-					}
-				}
-
-				if (p_38907_) {
-					--i;
-				} else {
-					++i;
-				}
-			}
-		}
-
-		if (!p_38904_.isEmpty()) {
+		while (!p_38904_.isEmpty()) {
 			if (p_38907_) {
-				i = p_38906_ - 1;
-			} else {
-				i = p_38905_;
+				if (i < p_38905_) {
+					break;
+				}
+			} else if (i >= p_38906_) {
+				break;
 			}
 
-			while (true) {
-				if (p_38907_) {
-					if (i < p_38905_) {
-						break;
-					}
-				} else if (i >= p_38906_) {
-					break;
-				}
-
-				Slot slot1 = this.slots.get(i);
-				ItemStack itemstack1 = slot1.getItem();
-				if (itemstack1.isEmpty() && slot1.mayPlace(p_38904_)) {
-					if (p_38904_.getCount() > slot1.getMaxStackSize()) {
-						slot1.set(p_38904_.split(slot1.getMaxStackSize()));
-					} else {
-						slot1.set(p_38904_.split(p_38904_.getCount()));
-					}
-
-					slot1.setChanged();
+			Slot slot = this.slots.get(i);
+			ItemStack itemstack = slot.getItem();
+			if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(p_38904_, itemstack)) {
+				int j = itemstack.getCount() + p_38904_.getCount();
+				int maxSize = slot.getMaxStackSize();
+				if (j <= maxSize) {
+					p_38904_.setCount(0);
+					itemstack.setCount(j);
+					slot.setChanged();
+					slot.set(itemstack);
 					flag = true;
-					break;
+				} else if (itemstack.getCount() < maxSize) {
+					p_38904_.shrink(maxSize - itemstack.getCount());
+					itemstack.setCount(maxSize);
+					slot.setChanged();
+					slot.set(itemstack);
+					flag = true;
 				}
+			}
 
-				if (p_38907_) {
-					--i;
-				} else {
-					++i;
-				}
+			if (p_38907_) {
+				--i;
+			} else {
+				++i;
 			}
 		}
-
 		return flag;
 	}
 
 	@Override
 	public void initializeContents(int p_182411_, List<ItemStack> p_182412_, ItemStack p_182413_) {
-		for(int i = 0; i<p_182412_.size(); i++) {
+		for (int i = 0; i < p_182412_.size(); i++) {
 			fixItemStack(p_182412_.get(i));
 		}
 		super.initializeContents(p_182411_, p_182412_, fixItemStack(p_182413_));
 	}
-	
+
 	@Override
 	public void setItem(int p_182407_, int p_182408_, ItemStack p_182409_) {
 		super.setItem(p_182407_, p_182408_, fixItemStack(p_182409_));
 	}
-	
+
 	@Override
 	public void setSynchronizer(ContainerSynchronizer p_150417_) {
-		if(player instanceof ServerPlayer player) {
+		if (player instanceof ServerPlayer player) {
 			super.setSynchronizer(new Synch(player));
 			return;
 		}
@@ -204,33 +162,31 @@ public class AlphaPouchMenu extends AbstractContainerMenu {
 
 	private ItemStack fixItemStack(ItemStack stack) {
 		CompoundTag tag = stack.getTag();
-		System.out.println("Received: " + tag);
-		if(tag != null && tag.contains("iSize")) {
+		if (tag != null && tag.contains("iSize")) {
 			stack.setCount(tag.getInt("iSize"));
 			tag.remove("iSize");
 		}
 		return stack;
 	}
-	
+
 	static class Synch implements ContainerSynchronizer {
 
 		ServerPlayer sp;
-		
+
 		public Synch(ServerPlayer player) {
 			this.sp = player;
 		}
-		
+
 		public void sendInitialData(AbstractContainerMenu p_143448_, NonNullList<ItemStack> p_143449_,
 				ItemStack p_143450_, int[] p_143451_) {
 			NonNullList<ItemStack> nnl = NonNullList.withSize(p_143449_.size(), ItemStack.EMPTY);
-			
-			for(int i = 0; i < nnl.size(); i++) {
+
+			for (int i = 0; i < nnl.size(); i++) {
 				nnl.set(i, fixItemStack(p_143449_.get(i)));
 			}
 			sp.connection.send(new ClientboundContainerSetContentPacket(p_143448_.containerId,
 					p_143448_.incrementStateId(), nnl, fixItemStack(p_143450_)));
 
-			
 			for (int i = 0; i < p_143451_.length; ++i) {
 				this.broadcastDataValue(p_143448_, i, p_143451_[i]);
 			}
@@ -243,8 +199,8 @@ public class AlphaPouchMenu extends AbstractContainerMenu {
 		}
 
 		public void sendCarriedChange(AbstractContainerMenu p_143445_, ItemStack p_143446_) {
-			sp.connection
-					.send(new ClientboundContainerSetSlotPacket(-1, p_143445_.incrementStateId(), -1, fixItemStack(p_143446_)));
+			sp.connection.send(new ClientboundContainerSetSlotPacket(-1, p_143445_.incrementStateId(), -1,
+					fixItemStack(p_143446_)));
 		}
 
 		public void sendDataChange(AbstractContainerMenu p_143437_, int p_143438_, int p_143439_) {
@@ -252,17 +208,13 @@ public class AlphaPouchMenu extends AbstractContainerMenu {
 		}
 
 		private void broadcastDataValue(AbstractContainerMenu p_143455_, int p_143456_, int p_143457_) {
-			sp.connection
-					.send(new ClientboundContainerSetDataPacket(p_143455_.containerId, p_143456_, p_143457_));
+			sp.connection.send(new ClientboundContainerSetDataPacket(p_143455_.containerId, p_143456_, p_143457_));
 		}
-		
+
 		private ItemStack fixItemStack(ItemStack stack) {
 			ItemStack item = stack.copy();
-			System.out.println("noot" + stack.getCount());
-			if(!item.isEmpty()) {
+			if (!item.isEmpty()) {
 				item.addTagElement("iSize", IntTag.valueOf(stack.getCount()));
-				System.out.println("Send: " + item.getTag());
-//				item.setCount(1);
 			}
 			return item;
 		}
