@@ -90,10 +90,12 @@ public class DeepPouches {
 		MinecraftForge.EVENT_BUS.register(this);
 		
 		ForgeRegistries.MENU_TYPES.register("alpha_pouch", ALPHA_POUCH_MENU);
-		MenuScreens.register(ALPHA_POUCH_MENU, AlphaPouchScreen::new);
 		
 		ForgeRegistries.MENU_TYPES.register("beta_pouch", BETA_POUCH_MENU);
-		MenuScreens.register(BETA_POUCH_MENU, BetaPouchScreen::new);
+		if(!FMLEnvironment.dist.isDedicatedServer()) {
+			MenuScreens.register(ALPHA_POUCH_MENU, AlphaPouchScreen::new);
+			MenuScreens.register(BETA_POUCH_MENU, BetaPouchScreen::new);
+		}
 		
 		DPPacketManager.MANAGER.init();
 	}

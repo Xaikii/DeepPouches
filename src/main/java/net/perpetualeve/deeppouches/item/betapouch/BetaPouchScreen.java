@@ -62,5 +62,4 @@ public class BetaPouchScreen extends AbstractContainerScreen<BetaPouchMenu> {
 					18);
 		}
 	}
-
 }

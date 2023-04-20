@@ -17,6 +17,7 @@ import net.minecraft.world.inventory.ContainerSynchronizer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.perpetualeve.deeppouches.DeepPouches;
+import net.perpetualeve.deeppouches.item.BlockedSlot;
 import net.perpetualeve.deeppouches.item.SimplePouchContainer;
 
 public class AlphaPouchMenu extends AbstractContainerMenu {
@@ -31,6 +32,7 @@ public class AlphaPouchMenu extends AbstractContainerMenu {
 
 	public AlphaPouchMenu(int id, Inventory inv, Container container) {
 		super(DeepPouches.ALPHA_POUCH_MENU, id);
+		//TODO: close screen when item removed from inventory, stitch GUI to extend to the bottom when more rows are needed and not to the bottom
 		this.container = container;
 		container.startOpen(player = inv.player);
 
@@ -52,10 +54,14 @@ public class AlphaPouchMenu extends AbstractContainerMenu {
 		}
 
 		for (int k = 0; k < 9; ++k) {
-			this.addSlot(new Slot(inv, k, 8 + k * 18, 170));
+			if(k == inv.selected) {
+				this.addSlot(new BlockedSlot(inv, k, 8+k*18, 170));
+			} else {
+				this.addSlot(new Slot(inv, k, 8 + k * 18, 170));
+			}
 		}
 	}
-
+	
 	@Override
 	public boolean stillValid(Player player) {
 		return this.container.stillValid(player);
@@ -99,7 +105,7 @@ public class AlphaPouchMenu extends AbstractContainerMenu {
 		if (p_38907_) {
 			i = p_38906_ - 1;
 		}
-
+		
 		while (!p_38904_.isEmpty()) {
 			if (p_38907_) {
 				if (i < p_38905_) {
@@ -118,13 +124,13 @@ public class AlphaPouchMenu extends AbstractContainerMenu {
 					p_38904_.setCount(0);
 					itemstack.setCount(j);
 					slot.setChanged();
-					slot.set(itemstack);
+					if(itemstack != ItemStack.EMPTY && itemstack != null) slot.set(itemstack);
 					flag = true;
 				} else if (itemstack.getCount() < maxSize) {
 					p_38904_.shrink(maxSize - itemstack.getCount());
 					itemstack.setCount(maxSize);
 					slot.setChanged();
-					slot.set(itemstack);
+					if(itemstack != ItemStack.EMPTY && itemstack != null) slot.set(itemstack);
 					flag = true;
 				}
 			}
@@ -135,6 +141,46 @@ public class AlphaPouchMenu extends AbstractContainerMenu {
 				++i;
 			}
 		}
+		
+		if (!p_38904_.isEmpty()) {
+	         if (p_38907_) {
+	            i = p_38906_ - 1;
+	         } else {
+	            i = p_38905_;
+	         }
+
+	         while(true) {
+	            if (p_38907_) {
+	               if (i < p_38905_) {
+	                  break;
+	               }
+	            } else if (i >= p_38906_) {
+	               break;
+	            }
+
+	            Slot slot1 = this.slots.get(i);
+	            ItemStack itemstack1 = slot1.getItem();
+	            if (itemstack1.isEmpty() && slot1.mayPlace(p_38904_)) {
+	               if (p_38904_.getCount() > slot1.getMaxStackSize()) {
+	                  slot1.set(p_38904_.split(slot1.getMaxStackSize()));
+	               } else {
+	                  slot1.set(p_38904_.split(p_38904_.getCount()));
+	               }
+
+	               slot1.setChanged();
+	               if(itemstack1 != ItemStack.EMPTY && itemstack1 != null) slot1.set(itemstack1);
+	               flag = true;
+	               break;
+	            }
+
+	            if (p_38907_) {
+	               --i;
+	            } else {
+	               ++i;
+	            }
+	         }
+	      }
+		
 		return flag;
 	}
 

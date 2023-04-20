@@ -43,4 +43,9 @@ public class AlphaPouch extends Item {
 	public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
 		return new PouchItemStackHandler(stack, DeepPouches.alpha_slots);
 	}
+	
+	@Override
+	public int getMaxStackSize(ItemStack stack) {
+		return 1;
+	}
 }

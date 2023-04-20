@@ -17,8 +17,8 @@ import net.minecraft.world.inventory.ContainerSynchronizer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.perpetualeve.deeppouches.DeepPouches;
+import net.perpetualeve.deeppouches.item.BlockedSlot;
 import net.perpetualeve.deeppouches.item.SimplePouchContainer;
-import net.perpetualeve.deeppouches.item.alphapouch.AlphaPouchSlot;
 
 public class BetaPouchMenu extends AbstractContainerMenu {
 	private final Container container;
@@ -35,7 +35,7 @@ public class BetaPouchMenu extends AbstractContainerMenu {
 		this.container = container;
 		container.startOpen(player = inv.player);
 
-		int o = count = DeepPouches.alpha_slots;
+		int o = count = DeepPouches.beta_slots;
 		int q = (int) (54 - o) / 9;
 		for (int i = 0; i < Math.min(o, 54); ++i) {
 			int y = i / 9;
@@ -43,7 +43,7 @@ public class BetaPouchMenu extends AbstractContainerMenu {
 
 			if (i == 0)
 				offSetCount = (y * 18 + q * 18);
-			this.addSlot(new AlphaPouchSlot(container, i, 8 + x * 18, (y * 18 + q * 18) - 12));
+			this.addSlot(new BetaPouchSlot(container, i, 8 + x * 18, (y * 18 + q * 18) - 12));
 		}
 
 		for (int i = 0; i < 3; ++i) {
@@ -53,7 +53,11 @@ public class BetaPouchMenu extends AbstractContainerMenu {
 		}
 
 		for (int k = 0; k < 9; ++k) {
-			this.addSlot(new Slot(inv, k, 8 + k * 18, 170));
+			if(k == inv.selected) {
+				this.addSlot(new BlockedSlot(inv, k, 8+k*18, 170));
+			} else {
+				this.addSlot(new Slot(inv, k, 8 + k * 18, 170));
+			}
 		}
 	}
 
@@ -100,7 +104,7 @@ public class BetaPouchMenu extends AbstractContainerMenu {
 		if (p_38907_) {
 			i = p_38906_ - 1;
 		}
-
+		
 		while (!p_38904_.isEmpty()) {
 			if (p_38907_) {
 				if (i < p_38905_) {
@@ -119,13 +123,13 @@ public class BetaPouchMenu extends AbstractContainerMenu {
 					p_38904_.setCount(0);
 					itemstack.setCount(j);
 					slot.setChanged();
-					slot.set(itemstack);
+					if(itemstack != ItemStack.EMPTY && itemstack != null) slot.set(itemstack);
 					flag = true;
 				} else if (itemstack.getCount() < maxSize) {
 					p_38904_.shrink(maxSize - itemstack.getCount());
 					itemstack.setCount(maxSize);
 					slot.setChanged();
-					slot.set(itemstack);
+					if(itemstack != ItemStack.EMPTY && itemstack != null) slot.set(itemstack);
 					flag = true;
 				}
 			}
@@ -136,6 +140,46 @@ public class BetaPouchMenu extends AbstractContainerMenu {
 				++i;
 			}
 		}
+		
+		if (!p_38904_.isEmpty()) {
+	         if (p_38907_) {
+	            i = p_38906_ - 1;
+	         } else {
+	            i = p_38905_;
+	         }
+
+	         while(true) {
+	            if (p_38907_) {
+	               if (i < p_38905_) {
+	                  break;
+	               }
+	            } else if (i >= p_38906_) {
+	               break;
+	            }
+
+	            Slot slot1 = this.slots.get(i);
+	            ItemStack itemstack1 = slot1.getItem();
+	            if (itemstack1.isEmpty() && slot1.mayPlace(p_38904_)) {
+	               if (p_38904_.getCount() > slot1.getMaxStackSize()) {
+	                  slot1.set(p_38904_.split(slot1.getMaxStackSize()));
+	               } else {
+	                  slot1.set(p_38904_.split(p_38904_.getCount()));
+	               }
+
+	               slot1.setChanged();
+	               if(itemstack1 != ItemStack.EMPTY && itemstack1 != null) slot1.set(itemstack1);
+	               flag = true;
+	               break;
+	            }
+
+	            if (p_38907_) {
+	               --i;
+	            } else {
+	               ++i;
+	            }
+	         }
+	      }
+		
 		return flag;
 	}
 

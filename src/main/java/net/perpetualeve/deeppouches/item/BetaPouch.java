@@ -44,4 +44,9 @@ public class BetaPouch extends Item {
 	public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
 		return new PouchItemStackHandler(stack, DeepPouches.beta_slots);
 	}
+	
+	@Override
+	public int getMaxStackSize(ItemStack stack) {
+		return 1;
+	}
 }
